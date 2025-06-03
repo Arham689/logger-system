@@ -8,6 +8,7 @@ import { usersTable } from '../schema.js';
 import { setCookie } from 'hono/cookie';
 import bcrypt from 'bcryptjs';
 import { eq } from 'drizzle-orm';
+import { id } from 'zod/v4/locales';
 
 const userSchema = z.object({
     name: z.string().nonempty(),
@@ -25,13 +26,13 @@ export const signToken = (email: string): string => {
     return jwt.sign({ email }, process.env.JWT_SECREATE);
 };
 
-export const encryptPassword = (password: string): string => {
+export const encryptPassword = (password: string): Promise<string> => {
     const saltRounds = 10;
     // Generate a salt
     const salt = bcrypt.genSaltSync(saltRounds);
 
     // Hash the password using the generated salt
-    const hash = bcrypt.hashSync(password, salt);
+    const hash = bcrypt.hash(password, salt);
 
     return hash;
 };
@@ -56,7 +57,7 @@ export const signUp = asyncErrorHandler(async (c: Context, next: Next) => {
 
     const validatedData: userType = result.data;
 
-    const hashedPass = encryptPassword(validatedData.password);
+    const hashedPass = await encryptPassword(validatedData.password);
 
     // create user
     await db.insert(usersTable).values({ ...validatedData, password: hashedPass });
@@ -98,35 +99,41 @@ export const login = asyncErrorHandler(async (c: Context, next: Next) => {
         return c.json({ error: result.error.errors }, 400);
     }
     // email exist in db else redirect to signup
-    const user = await db.select({email : usersTable.email , password : usersTable.password}).from(usersTable).where(eq(usersTable.email, email)).limit(1);
-    console.log(user)
+    const user = await db
+        .select({ email: usersTable.email, password: usersTable.password , id :usersTable.id })
+        .from(usersTable)
+        .where(eq(usersTable.email, email))
+        .limit(1);
+    console.log(user);
     if (user.length === 0) {
-        // Email not found — redirect to signup
-        return c.redirect('/signup');
+        return c.json(
+            {
+                status: 'error',
+                message: 'Invalid credentials', // Generic message
+            },
+            401
+        );
     }
 
     // check the password else throw the error
-    const isPasswordCorrect =await bcrypt.compare(password , user[0].password)
+    const isPasswordCorrect = await bcrypt.compare(password, user[0].password);
 
-    if(!user || isPasswordCorrect ){
-        return c.json(
-            { status: 'error', message: 'User not found or password is not correct' },
-            400
-        );
-    }else{
+    if (!user || !isPasswordCorrect) {
+        return c.json({ status: 'error', message: 'User not found or password is not correct' }, 400);
+    } else {
         c.set('user', user[0]);
     }
 
     // generate token and send is cookie
-    const token = signToken(user[0].email)
+    const token = signToken(user[0].email);
 
-    setCookie(c , 'token' , token ,  {
+    setCookie(c, 'token', token, {
         httpOnly: true,
         maxAge: 2592000,
-    })
+    });
     // final respoinst
     return c.json({
         message: 'successful',
-        token
+        token,
     });
 });

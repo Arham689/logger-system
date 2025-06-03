@@ -20,7 +20,8 @@ export type LogDataType = z.infer<typeof logSchema>;
 export const getlogs = asyncErrorHandler(async (c: Context , next : Next) => {
     // make seperate fo useres and activelog affer auth 
     console.log("user from logs" , c.get('user'))
-    const logs = await db.select().from(activityLogsTable)
+    const user = c.get('user')
+    const logs = await db.select().from(activityLogsTable).where(eq(activityLogsTable.userId , user.id))
     console.log(logs)
     
     c.status(200)
@@ -42,8 +43,11 @@ export const getUsers = asyncErrorHandler(async ( c : Context , next :Next ) => 
 
 export const postlogs = asyncErrorHandler(async (c: Context, next: Next) => {
   const body = await c.req.json();
-
-  const result = logSchema.safeParse(body);
+  const user = c.get('user')
+  console.log(user)
+  const result = logSchema.safeParse({...body , 
+    userId : user.id
+  });
 
   if (!result.success) {
     return c.json(
