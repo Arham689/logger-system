@@ -5,14 +5,25 @@ import { usersTable, type InsertUser, type SelectUser } from './db/schema/user.j
 import logger from './routes/logger.route.js';
 import { eq } from 'drizzle-orm';
 import authRoute from './routes/auth.route.js';
+import { cors } from 'hono/cors';
 
 const app = new Hono();
+
+app.use(
+    '*',
+    cors({
+        origin: 'http://localhost:5173',
+        credentials: true,
+        allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowHeaders: ['Content-Type', 'Authorization'],
+    })
+);
 
 app.get('/', (c) => {
     return c.json({ helo: 'hono' });
 });
 
-// seed 
+// seed
 app.get('/api/insert', async (c) => {
     try {
         await createUser({ name: 'Alice1', age: 25, email: 'alice1@example.com' });
@@ -33,7 +44,7 @@ app.get('/api/insert', async (c) => {
         // 	content: 'Alice writes again.',
         // 	userId: 1,
         // });
-        
+
         console.log('the data is inserted ');
 
         return c.json({
@@ -46,7 +57,7 @@ app.get('/api/insert', async (c) => {
 });
 
 app.route('/api', logger);
-app.route('/api' , authRoute )
+app.route('/api', authRoute);
 
 async function createUser(data: InsertUser) {
     await db.insert(usersTable).values(data);

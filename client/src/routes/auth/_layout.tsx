@@ -1,0 +1,38 @@
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
+import axios from 'axios';
+
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+
+export const Route = createFileRoute('/auth/_layout')({
+  beforeLoad: async ({ location }) => {
+    try {
+      const request = await axios.get(`${BASE_URL}/isauth`, { withCredentials: true });
+      console.log('Auth Layout: isAuth check response:', request.data);
+
+      if (request.data.isauth !== true) {
+        console.log('Auth Layout: User NOT authenticated, redirecting to /');
+        throw redirect({
+          to: '/',
+          search: {
+            redirect: location.href,
+          },
+        });
+      }
+
+      console.log('Auth Layout: User authenticated, continuing to child route.');
+    } catch (error) {
+      console.error('Auth Layout: Authentication check failed:', error);
+
+      throw redirect({ to: '/' });
+    }
+  },
+  component: AuthLayoutComponent,
+});
+
+function AuthLayoutComponent() {
+  return (
+    <div className='bg-black text-white w-screen h-screen'>
+      <Outlet />
+    </div>
+  );
+}

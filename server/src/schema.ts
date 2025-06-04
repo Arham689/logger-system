@@ -1,7 +1,7 @@
 import { relations } from 'drizzle-orm';
 import { integer, pgEnum, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
 
-export const eventTypeEnum = pgEnum('event_type', ['LOGIN', 'LOGOUT', 'PAGE_VISIT', 'ERROR']);
+export const eventTypeEnum = pgEnum('event_type', ['LOGIN', 'LOGOUT', 'PAGE_VISIT', 'ERROR' , 'WARNING' ,'API_CALL']);
 
 export const usersTable = pgTable('users', {
     id: serial('id').primaryKey(),

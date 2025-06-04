@@ -5,10 +5,10 @@ import { asyncErrorHandler } from '../utils/asyncErrorHandler.js';
 import CustomError from '../utils/customerror.js';
 import { db } from '../db.js';
 import { usersTable } from '../schema.js';
-import { setCookie } from 'hono/cookie';
+import { getCookie, setCookie } from 'hono/cookie';
 import bcrypt from 'bcryptjs';
 import { eq } from 'drizzle-orm';
-import { id } from 'zod/v4/locales';
+import { fa, id } from 'zod/v4/locales';
 
 const userSchema = z.object({
     name: z.string().nonempty(),
@@ -77,10 +77,12 @@ export const signUp = asyncErrorHandler(async (c: Context, next: Next) => {
         );
     }
 
-    // set token cookie
     setCookie(c, 'token', token, {
         httpOnly: true,
-        maxAge: 2592000,
+        secure: process.env.NODE_ENV === 'production', 
+        maxAge: parseInt(process.env.JWT_COOKIE_EXPIRES_IN || '7') * 24 * 60 * 60, // 7 days
+        path: '/',
+        sameSite: 'Lax',
     });
 
     return c.json({
@@ -100,7 +102,7 @@ export const login = asyncErrorHandler(async (c: Context, next: Next) => {
     }
     // email exist in db else redirect to signup
     const user = await db
-        .select({ email: usersTable.email, password: usersTable.password , id :usersTable.id })
+        .select({ email: usersTable.email, password: usersTable.password, id: usersTable.id })
         .from(usersTable)
         .where(eq(usersTable.email, email))
         .limit(1);
@@ -129,11 +131,23 @@ export const login = asyncErrorHandler(async (c: Context, next: Next) => {
 
     setCookie(c, 'token', token, {
         httpOnly: true,
-        maxAge: 2592000,
+        secure: process.env.NODE_ENV === 'production', 
+        maxAge: parseInt(process.env.JWT_COOKIE_EXPIRES_IN || '7') * 24 * 60 * 60, // 7 days
+        path: '/',
+        sameSite: 'Lax',
     });
     // final respoinst
     return c.json({
         message: 'successful',
+        token,
+    });
+});
+
+export const isAuth = asyncErrorHandler(async (c: Context) => {
+    let token = getCookie(c, 'token');
+    console.log('from isauth call ', token);
+    return c.json({
+        isauth: true,
         token,
     });
 });

@@ -5,7 +5,7 @@ import { eq } from 'drizzle-orm';
 import { activityLogsTable } from '../schema.js';
 import { z } from 'zod';
 import {asyncErrorHandler } from "../utils/asyncErrorHandler.js"
-export const eventTypeEnum = z.enum(['LOGIN', 'LOGOUT', 'PAGE_VISIT', 'ERROR']);
+export const eventTypeEnum = z.enum(['LOGIN', 'LOGOUT', 'PAGE_VISIT', 'ERROR' , 'WARNING' ,'API_CALL']);
 
 const logSchema = z.object({
   userId: z.number().int(),

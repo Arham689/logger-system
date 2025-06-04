@@ -11,16 +11,13 @@ type JWTPayload = {
     email: string;
 };
 export const protect = asyncErrorHandler(async (c: Context, next: Next) => {
-    const tempToken = c.req.header('authorization')?.replace('Bearer ', '');
     let token;
-    if (c.req.header('authorization') && tempToken?.startsWith('bearer')) {
-        token = tempToken.split(' ')[1];
-    } else {
-        token = getCookie(c, 'token');
-    }
 
-    if (!token) {
-        throw new CustomError('You are not loged in', 401);
+    token = getCookie(c, 'token');
+    
+    console.log("token" , token )
+    if (!token) {   
+        throw new CustomError('You are not logged in', 401);
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECREATE as string) as JWTPayload;
