@@ -15,6 +15,55 @@
       "when": 1748957637631,
       "tag": "0001_mean_randall",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1749119916911,
+      "tag": "0002_even_nightcrawler",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1749120000717,
+      "tag": "0003_handy_marrow",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1749580554233,
+      "tag": "0004_condemned_mad_thinker",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1749706904015,
+      "tag": "0005_true_alex_power",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1749712074682,
+      "tag": "0006_broad_silverclaw",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1749717757114,
+      "tag": "0007_flat_stranger",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1749731846146,
+      "tag": "0008_sparkling_gunslinger",
+      "breakpoints": true
     }
   ]
 }

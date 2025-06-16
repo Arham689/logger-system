@@ -16,17 +16,27 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
 import { Route as AuthLayoutImport } from './routes/auth/_layout'
+import { Route as AdminLayoutImport } from './routes/admin/_layout'
 import { Route as AuthLayoutHomeImport } from './routes/auth/_layout.home'
+import { Route as AuthLayoutGenerateKeyImport } from './routes/auth/_layout.generateKey'
+import { Route as AdminLayoutDashboardImport } from './routes/admin/_layout.dashboard'
 
 // Create Virtual Routes
 
 const AuthImport = createFileRoute('/auth')()
+const AdminImport = createFileRoute('/admin')()
 
 // Create/Update Routes
 
 const AuthRoute = AuthImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminRoute = AdminImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -47,10 +57,27 @@ const AuthLayoutRoute = AuthLayoutImport.update({
   getParentRoute: () => AuthRoute,
 } as any)
 
+const AdminLayoutRoute = AdminLayoutImport.update({
+  id: '/_layout',
+  getParentRoute: () => AdminRoute,
+} as any)
+
 const AuthLayoutHomeRoute = AuthLayoutHomeImport.update({
   id: '/home',
   path: '/home',
   getParentRoute: () => AuthLayoutRoute,
+} as any)
+
+const AuthLayoutGenerateKeyRoute = AuthLayoutGenerateKeyImport.update({
+  id: '/generateKey',
+  path: '/generateKey',
+  getParentRoute: () => AuthLayoutRoute,
+} as any)
+
+const AdminLayoutDashboardRoute = AdminLayoutDashboardImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AdminLayoutRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -71,6 +98,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutImport
       parentRoute: typeof rootRoute
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminImport
+      parentRoute: typeof rootRoute
+    }
+    '/admin/_layout': {
+      id: '/admin/_layout'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminLayoutImport
+      parentRoute: typeof AdminRoute
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -85,6 +126,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLayoutImport
       parentRoute: typeof AuthRoute
     }
+    '/admin/_layout/dashboard': {
+      id: '/admin/_layout/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminLayoutDashboardImport
+      parentRoute: typeof AdminLayoutImport
+    }
+    '/auth/_layout/generateKey': {
+      id: '/auth/_layout/generateKey'
+      path: '/generateKey'
+      fullPath: '/auth/generateKey'
+      preLoaderRoute: typeof AuthLayoutGenerateKeyImport
+      parentRoute: typeof AuthLayoutImport
+    }
     '/auth/_layout/home': {
       id: '/auth/_layout/home'
       path: '/home'
@@ -97,11 +152,35 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
+interface AdminLayoutRouteChildren {
+  AdminLayoutDashboardRoute: typeof AdminLayoutDashboardRoute
+}
+
+const AdminLayoutRouteChildren: AdminLayoutRouteChildren = {
+  AdminLayoutDashboardRoute: AdminLayoutDashboardRoute,
+}
+
+const AdminLayoutRouteWithChildren = AdminLayoutRoute._addFileChildren(
+  AdminLayoutRouteChildren,
+)
+
+interface AdminRouteChildren {
+  AdminLayoutRoute: typeof AdminLayoutRouteWithChildren
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminLayoutRoute: AdminLayoutRouteWithChildren,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 interface AuthLayoutRouteChildren {
+  AuthLayoutGenerateKeyRoute: typeof AuthLayoutGenerateKeyRoute
   AuthLayoutHomeRoute: typeof AuthLayoutHomeRoute
 }
 
 const AuthLayoutRouteChildren: AuthLayoutRouteChildren = {
+  AuthLayoutGenerateKeyRoute: AuthLayoutGenerateKeyRoute,
   AuthLayoutHomeRoute: AuthLayoutHomeRoute,
 }
 
@@ -122,14 +201,20 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminLayoutRouteWithChildren
   '/auth': typeof AuthLayoutRouteWithChildren
+  '/admin/dashboard': typeof AdminLayoutDashboardRoute
+  '/auth/generateKey': typeof AuthLayoutGenerateKeyRoute
   '/auth/home': typeof AuthLayoutHomeRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminLayoutRouteWithChildren
   '/auth': typeof AuthLayoutRouteWithChildren
+  '/admin/dashboard': typeof AdminLayoutDashboardRoute
+  '/auth/generateKey': typeof AuthLayoutGenerateKeyRoute
   '/auth/home': typeof AuthLayoutHomeRoute
 }
 
@@ -137,22 +222,44 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/admin/_layout': typeof AdminLayoutRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/auth/_layout': typeof AuthLayoutRouteWithChildren
+  '/admin/_layout/dashboard': typeof AdminLayoutDashboardRoute
+  '/auth/_layout/generateKey': typeof AuthLayoutGenerateKeyRoute
   '/auth/_layout/home': typeof AuthLayoutHomeRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/auth' | '/auth/home'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/admin'
+    | '/auth'
+    | '/admin/dashboard'
+    | '/auth/generateKey'
+    | '/auth/home'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/auth' | '/auth/home'
+  to:
+    | '/'
+    | '/about'
+    | '/admin'
+    | '/auth'
+    | '/admin/dashboard'
+    | '/auth/generateKey'
+    | '/auth/home'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/admin'
+    | '/admin/_layout'
     | '/auth'
     | '/auth/_layout'
+    | '/admin/_layout/dashboard'
+    | '/auth/_layout/generateKey'
     | '/auth/_layout/home'
   fileRoutesById: FileRoutesById
 }
@@ -160,12 +267,14 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
 }
 
@@ -181,6 +290,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/about",
+        "/admin",
         "/auth"
       ]
     },
@@ -189,6 +299,19 @@ export const routeTree = rootRoute
     },
     "/about": {
       "filePath": "about.tsx"
+    },
+    "/admin": {
+      "filePath": "admin",
+      "children": [
+        "/admin/_layout"
+      ]
+    },
+    "/admin/_layout": {
+      "filePath": "admin/_layout.tsx",
+      "parent": "/admin",
+      "children": [
+        "/admin/_layout/dashboard"
+      ]
     },
     "/auth": {
       "filePath": "auth",
@@ -200,8 +323,17 @@ export const routeTree = rootRoute
       "filePath": "auth/_layout.tsx",
       "parent": "/auth",
       "children": [
+        "/auth/_layout/generateKey",
         "/auth/_layout/home"
       ]
+    },
+    "/admin/_layout/dashboard": {
+      "filePath": "admin/_layout.dashboard.tsx",
+      "parent": "/admin/_layout"
+    },
+    "/auth/_layout/generateKey": {
+      "filePath": "auth/_layout.generateKey.tsx",
+      "parent": "/auth/_layout"
     },
     "/auth/_layout/home": {
       "filePath": "auth/_layout.home.tsx",

@@ -1,7 +1,7 @@
 // src/routes/index.tsx
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import axios from 'axios';
-import { AlertCircle, Eye, EyeOff, Lock, Mail, Scale, User } from 'lucide-react';
+import { AlertCircle, ChevronDown, Eye, EyeOff, Lock, Mail, Scale, User } from 'lucide-react';
 import { useState } from 'react';
 
 export const Route = createFileRoute('/')({
@@ -18,7 +18,7 @@ function Index() {
   const [age, setAge] = useState<number | undefined>(undefined);
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-
+  const [role , setRole ] = useState('user')
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLElement>) => {
@@ -34,13 +34,15 @@ function Index() {
             email,
             password,
             age,
+            role
           },
           { withCredentials: true }
         );
         console.log('Signup successful:', response);
-        // After successful signup, navigate to the authenticated home page
-        // Use replace: true to prevent going back to the signup page with the back button
-        router.navigate({ to: '/auth/home', replace: true });
+       
+          response.data.role === 'user' ? 
+          router.navigate({ to: '/auth/home', replace: true }): 
+          router.navigate({to : '/admin/dashboard' , replace : true })
       } catch (err) {
         console.error('Signup error:', err);
         if (axios.isAxiosError(err)) {
@@ -60,10 +62,11 @@ function Index() {
           },
           { withCredentials: true }
         );
-        console.log('Login successful:', response);
-        // After successful login, navigate to the authenticated home page
-        // Use replace: true to prevent going back to the login page with the back button
-        router.navigate({ to: '/auth/home', replace: true });
+          console.log('Login successful:', response.data.role.role);
+          response.data.role.role === 'user' ? 
+          router.navigate({ to: '/auth/home', replace: true }): 
+          router.navigate({to : '/admin/dashboard' , replace : true })
+      
       } catch (err) {
         console.error('Login error:', err);
         if (axios.isAxiosError(err)) {
@@ -75,8 +78,8 @@ function Index() {
     }
   };
 
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-black from-50% to-[#1F4FD8] p-4">
+  return ( 
+    <div className="flex bg-black min-h-screen items-center justify-center bg-gradient-to-br from-black  via-[#1f50d86f] via-20% to-black p-4">
       <div className="w-full max-w-sm">
         {/* Header */}
         <div className="mb-8 text-center">
@@ -127,8 +130,27 @@ function Index() {
                       value={age}
                       onChange={(e) => setAge(parseInt(e.target.value))}
                       className="w-full rounded-lg border border-gray-600 bg-gray-700/50 py-3 pr-4 pl-10 text-white placeholder-gray-400 transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                      placeholder="Enter your age" // Changed placeholder for clarity
+                      placeholder="Enter your age" 
                     />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-300">Role</label>
+                  <div className="relative">
+                    <ChevronDown
+                      className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-gray-500"
+                      size={18}
+                    />
+                    <select
+                      onChange={(e) => {
+                        console.log(e.target.value)
+                        setRole(e.target.value)
+                      }}
+                      className="w-full appearance-none rounded-lg border border-gray-600 bg-gray-700/50 py-3 pr-4 pl-10 text-white placeholder-gray-400 transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    >
+                      <option value="user">User</option>
+                      <option value="admin">Admin</option>
+                    </select>
                   </div>
                 </div>
               </>
@@ -169,8 +191,8 @@ function Index() {
               </div>
             </div>
 
-            <button // Changed div to button for semantic correctness and proper form submission
-              type="submit" // Added type="submit"
+            <button
+              type="submit"
               onClick={handleSubmit}
               className="mt-6 w-full cursor-pointer rounded-lg bg-blue-600 px-4 py-3 text-center font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-none"
             >
@@ -180,7 +202,7 @@ function Index() {
 
           <div className="mt-6 text-center">
             <button
-              type="button" // Added type="button" to prevent form submission
+              type="button" 
               onClick={() => {
                 setIsSignIn(!isSignIn);
                 setError('');

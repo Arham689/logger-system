@@ -26,7 +26,7 @@ export const protect = asyncErrorHandler(async (c: Context, next: Next) => {
     // d call to check the email or user is present
 
     const user = await db
-        .select({ email: usersTable.email, password: usersTable.password, id: usersTable.id })
+        .select({ email: usersTable.email, password: usersTable.password, id: usersTable.id , role : usersTable.role , name : usersTable.name })
         .from(usersTable)
         .where(eq(usersTable.email, decoded.email));
 
@@ -40,3 +40,27 @@ export const protect = asyncErrorHandler(async (c: Context, next: Next) => {
 
     await next();
 });
+export const roleAuthAdmin =async (c : Context , next : Next )=>{
+    const user = c.get('user')
+    console.log("from role auth admin " , user )
+    if(user.role !== 'admin')
+    {   
+        return c.json({
+            message : "you are not admin"
+        }, 401 )
+    }
+
+    await next()
+}
+
+export const roleAuthUser =async (c : Context , next : Next )=>{
+    const user = c.get('user')
+    if(user.role !== 'user')
+    {   
+        return c.json({
+            message : "you are not user"
+        }, 401 )
+    }
+
+    await next()
+}

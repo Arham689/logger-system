@@ -115,6 +115,7 @@ const Signup = () => {
                     />
                   </div>
                 </div>
+
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-300">Age</label>
                   <div className="relative">
@@ -128,6 +129,8 @@ const Signup = () => {
                     />
                   </div>
                 </div>
+
+                
               </>
             )}
 
