@@ -1,14 +1,6 @@
-import { useEffect } from "react"
+const Home = () => {
+  // use
+  return <div className="text-blue h-screen w-screen bg-black">home</div>;
+};
 
-
-const Home = ()=>{
-
-  // use 
-  return (
-    <div className="bg-black w-screen h-screen text-blue">
-      home
-    </div>
-  )
-}
-
-export default Home 
+export default Home;

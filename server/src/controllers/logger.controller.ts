@@ -6,23 +6,7 @@ import { activityLogsTable } from '../schema.js';
 import { z } from 'zod';
 import { asyncErrorHandler } from '../utils/asyncErrorHandler.js';
 import { ioServer } from '../index.js';
-
-export const eventTypeEnum = z.enum(['LOGIN', 'LOGOUT', 'PAGE_VISIT', 'ERROR', 'WARNING', 'API_CALL']);
-const TAG_OPTIONS = [
-    'first_log',
-    'recent',
-    'favorite',
-    'useful',
-    'repeating',
-    'error',
-    'warning',
-    'info',
-    'debug',
-    'critical',
-    'archived',
-    'manual',
-    'auto_generated',
-] as const;
+import { eventTypeEnum, TAG_OPTIONS } from '../utils/constants.js';
 
 const logSchema = z.object({
     userId: z.number().int(),
@@ -75,7 +59,7 @@ export const getlogs = asyncErrorHandler(async (c: Context, next: Next) => {
                 if (!hasMatchingTags(logTags, tags)) return false;
             }
 
-            //Mon Jun 16 2025 109:58:39 GMT+0530 (India Standard Time) -- query     
+            //Mon Jun 16 2025 109:58:39 GMT+0530 (India Standard Time) -- query
             //Wed Jun 04 2025 05:30:00 GMT 0530 (India Standard Time) -- log
             if (date !== 'null') {
                 const logDate = typeof log.createdAt === 'string' ? new Date(log.createdAt) : log.createdAt;
@@ -169,6 +153,7 @@ export const postlogs = asyncErrorHandler(async (c: Context, next: Next) => {
         201
     );
 });
+
 export const deletelogs = (c: Context) => {
     const para = c.req.param();
     const qurey = c.req.query();

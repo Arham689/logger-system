@@ -8,6 +8,6 @@ adminRoute.get('/users', protect, roleAuthAdmin, getAllUsers);
 
 adminRoute.get('/isadmin', protect, roleAuthAdmin, isAdmin);
 
-adminRoute.get('/data' , protect , roleAuthAdmin , getAllData)
+adminRoute.get('/data', protect, roleAuthAdmin, getAllData);
 
 export default adminRoute;

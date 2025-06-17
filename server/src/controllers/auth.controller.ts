@@ -15,7 +15,7 @@ const userSchema = z.object({
     age: z.number().min(18).max(60),
     email: z.string().email(),
     password: z.string().min(4).max(16),
-    role : z.enum(['user', 'admin'])
+    role: z.enum(['user', 'admin']),
 });
 
 const loginSchema = userSchema.pick({ email: true, password: true });
@@ -39,6 +39,7 @@ export const encryptPassword = (password: string): Promise<string> => {
 };
 
 export type userType = z.infer<typeof userSchema>;
+
 export const signUp = asyncErrorHandler(async (c: Context, next: Next) => {
     const data = await c.req.json();
 
@@ -80,7 +81,7 @@ export const signUp = asyncErrorHandler(async (c: Context, next: Next) => {
 
     setCookie(c, 'token', token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', 
+        secure: process.env.NODE_ENV === 'production',
         maxAge: parseInt(process.env.JWT_COOKIE_EXPIRES_IN || '7') * 24 * 60 * 60, // 7 days
         path: '/',
         sameSite: 'Lax',
@@ -89,7 +90,7 @@ export const signUp = asyncErrorHandler(async (c: Context, next: Next) => {
     return c.json({
         message: 'success',
         token: token,
-        role : data.role
+        role: data.role,
     });
 });
 
@@ -104,7 +105,7 @@ export const login = asyncErrorHandler(async (c: Context, next: Next) => {
     }
     // email exist in db else redirect to signup
     const user = await db
-        .select({ email: usersTable.email, password: usersTable.password, id: usersTable.id , role : usersTable.role })
+        .select({ email: usersTable.email, password: usersTable.password, id: usersTable.id, role: usersTable.role })
         .from(usersTable)
         .where(eq(usersTable.email, email))
         .limit(1);
@@ -133,7 +134,7 @@ export const login = asyncErrorHandler(async (c: Context, next: Next) => {
 
     setCookie(c, 'token', token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', 
+        secure: process.env.NODE_ENV === 'production',
         maxAge: parseInt(process.env.JWT_COOKIE_EXPIRES_IN || '7') * 24 * 60 * 60, // 7 days
         path: '/',
         sameSite: 'Lax',
@@ -142,30 +143,30 @@ export const login = asyncErrorHandler(async (c: Context, next: Next) => {
     return c.json({
         message: 'successful',
         token,
-        role : user[0]
+        role: user[0],
     });
 });
 
 export const isAuth = asyncErrorHandler(async (c: Context) => {
     let token = getCookie(c, 'token');
     console.log('from isauth call ', token);
-    const user = c.get('user')
+    const user = c.get('user');
     return c.json({
         isauth: true,
         token,
-        user
+        user,
     });
 });
 
 export const logout = asyncErrorHandler(async (c: Context) => {
-  // Clear the token by setting an expired cookie
-  setCookie(c, 'token', '', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 0, // delete immediately
-    path: '/',
-    sameSite: 'Lax',
-  });
+    // Clear the token by setting an expired cookie
+    setCookie(c, 'token', '', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 0, // delete immediately
+        path: '/',
+        sameSite: 'Lax',
+    });
 
-  return c.json({ message: 'Logged out successfully' }, 200);
+    return c.json({ message: 'Logged out successfully' }, 200);
 });

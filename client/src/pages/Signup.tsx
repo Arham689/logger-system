@@ -16,8 +16,8 @@ const Signup = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
     setError('');
-  
-  if (!isSignIn) {
+
+    if (!isSignIn) {
       try {
         const response = await axios.post(
           `${BASE_URL}/signup`,
@@ -25,7 +25,7 @@ const Signup = () => {
             name: username,
             email,
             password,
-            age
+            age,
           },
           { withCredentials: true }
         );
@@ -35,37 +35,37 @@ const Signup = () => {
         // toast.success(response.data.message);
       } catch (err) {
         console.log(err);
-          if (axios.isAxiosError(err)) {
-            setError(err.response?.data?.message || 'Server error');
-          } else {
-            setError('Server error');
-          }
+        if (axios.isAxiosError(err)) {
+          setError(err.response?.data?.message || 'Server error');
+        } else {
+          setError('Server error');
+        }
         // toast.error(err.response?.data?.message || 'Server error');
       }
       console.log(email, username, password);
     } else {
       try {
-          const response = await axios.post(
-              `${BASE_URL}/login`,
-              {
-                  email,
-                  password,
-              },
-              { withCredentials: true }
-          );
-          console.log(response)
-          //  , {withCredentials : true , headers : { "Content-Type" : "application/json" }}
-          // Cookies.set('token', response.data.token, { expires: 7, secure: true });
-          navigate('/home');
-          // toast.success(response.data.message);
+        const response = await axios.post(
+          `${BASE_URL}/login`,
+          {
+            email,
+            password,
+          },
+          { withCredentials: true }
+        );
+        console.log(response);
+        //  , {withCredentials : true , headers : { "Content-Type" : "application/json" }}
+        // Cookies.set('token', response.data.token, { expires: 7, secure: true });
+        navigate('/home');
+        // toast.success(response.data.message);
       } catch (err) {
-          console.log(err);
-          if (axios.isAxiosError(err)) {
-            setError(err.response?.data?.message || 'Server error');
-          } else {
-            setError('Server error');
-          }
-          // toast.error(err.response?.data?.message || 'Server error');
+        console.log(err);
+        if (axios.isAxiosError(err)) {
+          setError(err.response?.data?.message || 'Server error');
+        } else {
+          setError('Server error');
+        }
+        // toast.error(err.response?.data?.message || 'Server error');
       }
 
       console.log(email, password);
@@ -129,8 +129,6 @@ const Signup = () => {
                     />
                   </div>
                 </div>
-
-                
               </>
             )}
 

@@ -6,14 +6,13 @@ import type { Context, Next } from 'hono';
 import { asyncErrorHandler } from '../utils/asyncErrorHandler.js';
 import { decryptUserId } from '../utils/crypto.js';
 
-
 export async function validateApiKey(c: Context, next: Next) {
     // const keyData = apiKeysDb.get(apiKey);
 
     // access headers
     const apiKey = c.req.header('x-api-key');
     if (!apiKey) {
-        return c.json({message : 'api key not found '});
+        return c.json({ message: 'api key not found ' });
     }
     const keyData = await db.select().from(apikeyTable).where(eq(apikeyTable.key, apiKey));
     console.log('apikey', keyData);
@@ -36,23 +35,21 @@ export async function validateApiKey(c: Context, next: Next) {
 
 export const decryptApiKey = asyncErrorHandler(async (c: Context, next: Next) => {
     const authHeader = c.req.header('x-api-key');
-    console.log(authHeader , "header")
+    console.log(authHeader, 'header');
     if (!authHeader) {
         return c.json({ error: 'Authorization header missing or malformed' }, 401);
     }
 
-    const apiKey = authHeader
+    const apiKey = authHeader;
     try {
-        // 1. Decrypt the key to get the user ID
         const userIdString = decryptUserId(apiKey);
-        console.log(userIdString)
+        console.log(userIdString);
         const userId = parseInt(userIdString, 10);
 
         if (isNaN(userId)) {
-             return c.json({ error: 'Invalid user ID in key' }, 401);
+            return c.json({ error: 'Invalid user ID in key' }, 401);
         }
 
-        // 2. (Recommended) Check if a user with this ID actually exists
         const user = await db.query.usersTable.findFirst({
             where: eq(usersTable.id, userId),
         });
@@ -60,17 +57,11 @@ export const decryptApiKey = asyncErrorHandler(async (c: Context, next: Next) =>
         if (!user) {
             return c.json({ error: 'Invalid API key. User not found.' }, 401);
         }
-        
-        // Note: You could also add a check against the `apikeyTable` to see
-        // if the key is marked as `isActive: false` for revocation.
 
-        // 3. Attach the user to the context for subsequent handlers
         c.set('user', user);
-        console.log(user)
+        console.log(user);
         await next();
-
     } catch (error) {
-        // Decryption will throw an error if the key is invalid or tampered with
         return c.json({ error: 'Invalid or expired API Key' }, 401);
     }
 });

@@ -9,12 +9,20 @@ import { LogCard } from '../../components/LogCard';
 import PaginationBar from '../../components/PaginationBar';
 import { SimpleDropdownFilter } from '../../components/SimpleDropdownFilter';
 import { TableHeading } from '../../components/TableHeading';
-
+import { Calendar22 } from '@/components/ui/Datepicker';
+import { TAG_OPTIONS } from '@/utils/constants';
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export const Route = createFileRoute('/auth/_layout/home')({
   component: RouteComponent,
 });
+
+
+import {
+  Table,
+  TableHeader,
+  TableBody,
+} from "@/components/ui/table";
 
 type LogItem = {
   id?: number;
@@ -25,22 +33,6 @@ type LogItem = {
   userAgent: string;
   tag: string[];
 };
-
-const TAG_OPTIONS = [
-  'first_log',
-  'recent',
-  'favorite',
-  'useful',
-  'repeating',
-  'error',
-  'warning',
-  'info',
-  'debug',
-  'critical',
-  'archived',
-  'manual',
-  'auto_generated',
-];
 
 function RouteComponent() {
   const [list, setList] = useState<LogItem[]>([]);
@@ -56,7 +48,7 @@ function RouteComponent() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const [page, setPage] = useState(1);
-  const [limit] = useState(2);
+  const [limit] = useState(10);
 
   const [hasNextPage, setHasNextPage] = useState(false);
   const [hasPrevPage, setHasPrevPage] = useState(false);
@@ -71,6 +63,7 @@ function RouteComponent() {
   });
 
   socket.send('ehlo');
+  
   const handleNext = () => {
     if (hasNextPage) getUserLogs(page + 1);
   };
@@ -215,6 +208,8 @@ function RouteComponent() {
       />
     </div>
 
+
+
     <div className="min-w-0 flex-shrink-0">
       <MultiSelectInput
         label="Tags"
@@ -224,42 +219,29 @@ function RouteComponent() {
       />
     </div>
 
-    <div className="flex flex-col items-start gap-2 min-w-0 flex-shrink-0">
-      <input
-        type="date"
-        onChange={(e) => {
-          const val = e.target.value;
-          setSelectedDate(val ? new Date(val) : null);
-        }}
-        className="cursor-pointer rounded-xl border border-gray-400 bg-white p-2 text-black w-full min-w-[140px]"
-      />
+    
 
-      {selectedDate && (
-        <p className="text-sm text-[gray] whitespace-nowrap">
-          Selected date: <span className="font-semibold">{selectedDate.toLocaleDateString('en-CA')}</span>
-        </p>
-      )}
-    </div>
+      <Calendar22 setSelectedDate={setSelectedDate}/>
   </div>
 
   {/* add form */}
   {isOpen && <EventForm isOpen={isOpen} setIsOpen={setIsOpen} formError={isFormError} onSubmit={handleSubmit} />}
   
   {/* table */}
-  <div className="w-full max-w-[1480px] py-5 text-center px-4">
-    <div className="mt-6 overflow-x-auto rounded-xl border bg-white shadow-md">
-      <table className="w-full divide-y divide-gray-200 min-w-[800px]">
-        <thead className="bg-gray-50">
-          <TableHeading />
-        </thead>
-        <tbody className="divide-y divide-gray-200 bg-white">
-          {filterItems.map((log) => (
-            <LogCard key={log.id} log={log} />
-          ))}
-        </tbody>
-      </table>
+    <div className="w-full max-w-[1480px] py-5 text-center px-4">
+      <div className="mt-6 overflow-x-auto rounded-xl border bg-white shadow-md">
+        <Table className="min-w-[800px]">
+          <TableHeader>
+            <TableHeading />
+          </TableHeader>
+          <TableBody>
+            {filterItems.map((log) => (
+              <LogCard key={log.id} log={log} />
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
-  </div>
 
   {/* pagination */}
   <div className="w-full flex justify-center pb-10">

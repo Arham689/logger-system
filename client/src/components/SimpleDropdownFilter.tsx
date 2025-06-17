@@ -1,3 +1,4 @@
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface SimpleDropdownFilterProps {
   filters: string[];
@@ -5,23 +6,32 @@ interface SimpleDropdownFilterProps {
   setSelectedFilter: (filters: string[]) => void;
 }
 
-export  const SimpleDropdownFilter: React.FC<SimpleDropdownFilterProps> = ({ filters, selectedFilter, setSelectedFilter }) => {
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedFilter(e.target.value ? [e.target.value] : []);
+export const SimpleDropdownFilter: React.FC<SimpleDropdownFilterProps> = ({
+  filters,
+  selectedFilter,
+  setSelectedFilter,
+}) => {
+  const handleChange = (value: string) => {
+    if (value === 'all') {
+      setSelectedFilter([]);
+    } else {
+      setSelectedFilter([value]);
+    }
   };
 
   return (
-    <select
-      value={selectedFilter[0] || ''}
-      onChange={handleChange}
-      className="cursor-pointer rounded-xl border border-gray-400 bg-white p-2 text-black"
-    >
-      <option value="">All Categories</option>
-      {filters.map((filter, idx) => (
-        <option key={idx} value={filter}>
-          {filter}
-        </option>
-      ))}
-    </select>
+    <Select value={selectedFilter[0] || 'all'} onValueChange={handleChange}>
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder="All Dates" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="all">All Events</SelectItem>
+        {filters.map((filter, idx) => (
+          <SelectItem key={idx} value={filter}>
+            {filter}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 };

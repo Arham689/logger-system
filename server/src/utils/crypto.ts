@@ -54,7 +54,7 @@ export const decryptUserId = (apiKey: string): string => {
 
         // 3. Create the decipher
         const decipher = crypto.createDecipheriv(ALGORITHM, SECRET_KEY, iv);
-        
+
         // 4. Set the authentication tag. This is crucial for verifying data integrity.
         decipher.setAuthTag(authTag);
 

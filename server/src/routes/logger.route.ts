@@ -4,7 +4,10 @@ import { protect, roleAuthUser } from '../middleware/auth.middleware.js';
 
 const logger = new Hono();
 
-logger.get('/log', protect,roleAuthUser ,getlogs);
+logger.get('/log', protect, roleAuthUser, getlogs);
+
 logger.post('/log', protect, postlogs);
+
 logger.delete('/log/:id', protect, deletelogs);
+
 export default logger;

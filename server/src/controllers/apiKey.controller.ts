@@ -5,25 +5,9 @@ import { db } from '../db.js';
 import { activityLogsTable, apikeyTable } from '../schema.js';
 import { desc, eq } from 'drizzle-orm';
 import { encryptUserId } from '../utils/crypto.js';
-
+import { eventTypeEnum, TAG_OPTIONS } from '../utils/constants.js';
 import { z } from 'zod';
 
-export const eventTypeEnum = z.enum(['LOGIN', 'LOGOUT', 'PAGE_VISIT', 'ERROR', 'WARNING', 'API_CALL']);
-const TAG_OPTIONS = [
-    'first_log',
-    'recent',
-    'favorite',
-    'useful',
-    'repeating',
-    'error',
-    'warning',
-    'info',
-    'debug',
-    'critical',
-    'archived',
-    'manual',
-    'auto_generated',
-] as const;
 export type LogDataType = z.infer<typeof logSchema>;
 const logSchema = z.object({
     userId: z.number().int(),
@@ -60,7 +44,6 @@ export const gnerateApiKey = asyncErrorHandler(async (c: Context) => {
         expiresAt: expireAt.toISOString(),
     });
 });
-
 
 export function getOneDayExpiration() {
     const now = new Date();

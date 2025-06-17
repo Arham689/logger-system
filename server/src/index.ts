@@ -17,7 +17,7 @@ app.use(
         origin: 'http://localhost:5173',
         credentials: true,
         allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-       allowHeaders: ['X-Requested-With', 'Content-Type', 'Authorization', 'x-api-key'], 
+        allowHeaders: ['X-Requested-With', 'Content-Type', 'Authorization', 'x-api-key'],
     })
 );
 
@@ -28,7 +28,7 @@ app.get('/', (c) => {
 app.route('/api', logger);
 app.route('/api', authRoute);
 app.route('/api', adminRoute);
-app.route('/api', apiKeyRoute )
+app.route('/api', apiKeyRoute);
 
 const server = serve(
     {
@@ -58,9 +58,9 @@ ioServer.on('connection', (socket) => {
 
     socket.emit('hello', { id: socket.id });
 
-    socket.on('message' , (d)=>{
-        console.log(d)
-    })
+    socket.on('message', (d) => {
+        console.log(d);
+    });
 });
 
 // setInterval(() => {

@@ -1,51 +1,75 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 
 interface Prop {
-    hasNextPage : boolean,
-    hasPrevPage : boolean ,
-    page : number ,
-   handleNext : () => void ,  
-   handlePrev : () => void 
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+  page: number;
+  handleNext: () => void;
+  handlePrev: () => void;
 }
-const PaginationBar = ({hasNextPage , hasPrevPage , page , handleNext , handlePrev} : Prop ) => {
-    
+
+const PaginationBar = ({ hasNextPage, hasPrevPage, page, handleNext, handlePrev }: Prop) => {
   return (
-    <div className="mt-6 flex items-center justify-center gap-4 select-none">
-        {hasPrevPage && (
-          <button onClick={handlePrev} className="text-lg flex hover:bg-[#6161617f] rounded-xl p-2 items-center cursor-pointer  text-white transition hover:text-gray-300">
-             <ChevronLeft />Previous 
-          </button>
-        )}
+    <div className="mt-6 flex items-center justify-center">
+      <Pagination>
+        <PaginationContent className="gap-2">
+          {hasPrevPage && (
+            <>
+              <PaginationItem>
+                <PaginationPrevious className="cursor-pointer" onClick={handlePrev}>
+                  <ChevronLeft className="mr-1 h-4 w-4" />
+                  Previous
+                </PaginationPrevious>
+              </PaginationItem>
 
-        {hasPrevPage && (
-          <button
-            onClick={handlePrev}
-            className="rounded-xl bg-white px-5 py-4 text-sm text-black transition hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {page - 1}
-          </button>
-        )}
+              <PaginationItem>
+                <PaginationLink onClick={handlePrev} className="cursor-pointer">
+                  {page - 1}
+                </PaginationLink>
+              </PaginationItem>
+            </>
+          )}
 
-        <span className="rounded-xl bg-blue-500 px-5 py-4 text-sm text-white">{page}</span>
+          <PaginationItem>
+            <PaginationLink isActive className="bg-blue border border-[black] text-white">
+              {page}
+            </PaginationLink>
+          </PaginationItem>
 
-        {hasNextPage && (
-          <button
-            onClick={handleNext}
-            className="rounded-xl bg-white px-5 py-4 text-sm text-black transition hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {page + 1}
-          </button>
-        )}
+          {hasNextPage && (
+            <>
+              <PaginationItem>
+                <PaginationLink onClick={handleNext} className="cursor-pointer">
+                  {page + 1}
+                </PaginationLink>
+              </PaginationItem>
 
-        {hasNextPage && <button className="text-2xl text-white transition hover:text-gray-300">...</button>}
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
 
-        {hasNextPage && (
-          <button onClick={handleNext} className="text-lg flex hover:bg-[#6161617f] rounded-xl p-2 items-center cursor-pointer  text-white transition hover:text-gray-300">
-            Next <ChevronRight/>
-          </button>
-        )}
-      </div>
-  )
-}
+              <PaginationItem>
+                <PaginationNext className="cursor-pointer" onClick={handleNext}>
+                  Next
+                  <ChevronRight className="ml-1 h-4 w-4" />
+                </PaginationNext>
+              </PaginationItem>
+            </>
+          )}
+        </PaginationContent>
+      </Pagination>
+    </div>
+  );
+};
 
-export default PaginationBar
+export default PaginationBar;

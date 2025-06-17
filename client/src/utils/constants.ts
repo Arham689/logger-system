@@ -1,0 +1,15 @@
+export const TAG_OPTIONS = [
+  'first_log',
+  'recent',
+  'favorite',
+  'useful',
+  'repeating',
+  'error',
+  'warning',
+  'info',
+  'debug',
+  'critical',
+  'archived',
+  'manual',
+  'auto_generated',
+] ;

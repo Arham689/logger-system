@@ -1,3 +1,4 @@
+import { TAG_OPTIONS } from '@/utils/constants';
 import { motion } from 'framer-motion';
 import { ChevronDown, FileText, Globe, List, Monitor, Send, X } from 'lucide-react'; // Assuming you're using Lucide icons
 import React, { useEffect, useRef, useState } from 'react';
@@ -28,22 +29,6 @@ type EventFormProps = {
   onSubmit: (data: FormData) => void;
   formError?: boolean;
 };
-
-const TAG_OPTIONS = [
-  'first_log',
-  'recent',
-  'favorite',
-  'useful',
-  'repeating',
-  'error',
-  'warning',
-  'info',
-  'debug',
-  'critical',
-  'archived',
-  'manual',
-  'auto_generated',
-];
 
 const EventForm: React.FC<EventFormProps> = ({ isOpen, setIsOpen, onSubmit, formError }) => {
   const [eventType, setEventType] = useState(EVENT_TYPES[0]);
@@ -289,7 +274,7 @@ export const MultiSelectInput: React.FC<MultiSelectProps> = ({
                 aria-label="Search for tags"
               />
             </div>
-            <ul className="max-h-40 overflow-y-auto no-scrollbar" role="listbox">
+            <ul className="no-scrollbar max-h-40 overflow-y-auto" role="listbox">
               {filteredOptions.length > 0 ? (
                 filteredOptions.map((option) => (
                   <li

@@ -62,7 +62,6 @@ export const apikeyTable = pgTable('api_key', {
     expireAt: timestamp('expire_at', { withTimezone: true }).notNull(),
 });
 
-
 export type InsertUser = typeof usersTable.$inferInsert;
 export type SelectUser = typeof usersTable.$inferSelect;
 

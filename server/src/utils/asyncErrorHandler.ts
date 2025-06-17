@@ -19,23 +19,29 @@ type WrappedHonoHandler = (c: Context, next: Next) => Promise<void>;
  * passing them to `next(err)`.
  */
 export const asyncErrorHandler = (func: AsyncHonoHandler): WrappedHonoHandler => {
-  return async (c: Context, next: Next) => {
-    try {
-      return await func(c, next); 
-    } catch (err: any) {
-      console.error('Caught error in asyncErrorHandler:', err);
+    return async (c: Context, next: Next) => {
+        try {
+            return await func(c, next);
+        } catch (err: any) {
+            console.error('Caught error in asyncErrorHandler:', err);
 
-      if (err?.code === '23505') {
-        return c.json({
-          status: 'error',
-          message: 'Email already exists'
-        }, 409);
-      }
+            if (err?.code === '23505') {
+                return c.json(
+                    {
+                        status: 'error',
+                        message: 'Email already exists',
+                    },
+                    409
+                );
+            }
 
-      return c.json({
-        status: 'error',
-        message: err?.message || 'Internal Server Error',
-      }, 500);
-    }
-  };
+            return c.json(
+                {
+                    status: 'error',
+                    message: err?.message || 'Internal Server Error',
+                },
+                500
+            );
+        }
+    };
 };
